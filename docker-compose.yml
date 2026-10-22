@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_dw
+    environment:
+      POSTGRES_USER: de_user
+      POSTGRES_PASSWORD: de_password
+      POSTGRES_DB: warehouse
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  marquez:
+    image: marquezproject/marquez:latest
+    container_name: marquez_backend
+    ports:
+      - "5000:5000" # OpenLineage API
+      - "3000:3000" # Marquez UI
+    environment:
+      - MARQUEZ_PORT=5000
+      - MARQUEZ_ADMIN_PORT=5001
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_ui
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - postgres
+
+  airflow:
+    image: apache/airflow:2.8.1-python3.10
+    container_name: airflow_runner
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__OPENLINEAGE__DISABLED=False
+      - AIRFLOW__OPENLINEAGE__URL=http://marquez:5000
+      - AIRFLOW__OPENLINEAGE__NAMESPACE=pfe_demo
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./dbt_project:/opt/airflow/dbt_project
+      - ./soda:/opt/airflow/soda
+      - ./scripts:/opt/airflow/scripts
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - marquez
+
+volumes:
+  pgdata:
