@@ -1,0 +1,13 @@
+name: pfe
+version: "1.0.0"
+config-version: 2
+profile: pfe
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+models:
+  pfe:
+    marts:
+      +schema: marts
+      +materialized: table
