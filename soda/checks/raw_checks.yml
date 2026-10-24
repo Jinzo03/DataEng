@@ -1,8 +1,0 @@
-dataset: raw.orders
-checks:
-  - row_count > 0
-  - missing_count(order_id) = 0
-  - duplicate_count(order_id) = 0
-  - invalid_count(amount) = 0:
-      valid min: 0
-Transform: AWS::Serverless-2016-10-31

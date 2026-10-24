@@ -1,0 +1,14 @@
+# Scoped to the batch being processed (passed with: soda scan -v BATCH_DATE=...)
+filter orders [daily]:
+  where: batch_date = '${BATCH_DATE}'
+
+checks for orders [daily]:
+  - row_count > 0
+  - missing_count(order_id) = 0
+  - duplicate_count(order_id) = 0
+  - missing_count(customer_id) = 0
+  - missing_count(order_ts) = 0
+  - min(quantity) >= 1
+  - min(unit_price) > 0
+  - invalid_count(status) = 0:
+      valid values: [completed, pending, cancelled]

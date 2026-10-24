@@ -1,0 +1,17 @@
+data_source warehouse_raw:
+  type: postgres
+  host: ${WAREHOUSE_HOST}
+  port: "5432"
+  username: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  database: ${POSTGRES_DB}
+  schema: raw
+
+data_source warehouse_marts:
+  type: postgres
+  host: ${WAREHOUSE_HOST}
+  port: "5432"
+  username: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  database: ${POSTGRES_DB}
+  schema: marts
