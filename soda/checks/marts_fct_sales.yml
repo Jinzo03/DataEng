@@ -1,0 +1,10 @@
+filter fct_sales [daily]:
+  where: batch_date = '${BATCH_DATE}'
+
+checks for fct_sales [daily]:
+  - row_count > 0
+  - duplicate_count(order_id) = 0
+  - min(revenue) >= 0
+  - failed rows:
+      name: revenue must equal quantity * unit_price
+      fail condition: abs(revenue - quantity * unit_price) > 0.01
